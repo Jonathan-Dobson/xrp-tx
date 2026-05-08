@@ -1,0 +1,65 @@
+/**
+ * Type barrel — re-exports all type definitions.
+ */
+export type {
+  Amount,
+  IssuedCurrencyAmount,
+  MPTAmount,
+  ClawbackAmount,
+  IssuedCurrency,
+  Currency,
+} from './amounts.js';
+
+export type {
+  Memo,
+  Signer,
+  PathStep,
+  Path,
+  XChainBridge,
+  AuthorizeCredential,
+  SignerEntry,
+  OracleDataSeries,
+} from './common.js';
+
+export type {
+  BaseTransactionFields,
+  PreparedTransactionFields,
+  SignedTransactionFields,
+} from './base.js';
+
+export type { TransactionType } from './transaction-types.js';
+
+export {
+  GlobalFlags,
+  PaymentFlags,
+  AccountSetAsfFlags,
+  AccountSetTfFlags,
+  TrustSetFlags,
+  OfferCreateFlags,
+  NFTokenMintFlags,
+  NFTokenCreateOfferFlags,
+  PaymentChannelClaimFlags,
+  AMMDepositFlags,
+  AMMWithdrawFlags,
+  MPTokenAuthorizeFlags,
+  ClawbackFlags,
+  XChainModifyBridgeFlags,
+  BatchFlags,
+} from './flags.js';
+
+export type {
+  GlobalFlagsInterface,
+  PaymentFlagsInterface,
+  AccountSetFlagsInterface,
+  TrustSetFlagsInterface,
+  OfferCreateFlagsInterface,
+  NFTokenMintFlagsInterface,
+  NFTokenCreateOfferFlagsInterface,
+  PaymentChannelClaimFlagsInterface,
+  AMMDepositFlagsInterface,
+  AMMWithdrawFlagsInterface,
+  MPTokenAuthorizeFlagsInterface,
+  ClawbackFlagsInterface,
+  XChainModifyBridgeFlagsInterface,
+  BatchFlagsInterface,
+} from './flags.js';

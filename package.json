@@ -1,0 +1,45 @@
+{
+  "name": "xrp-tx",
+  "version": "0.1.0",
+  "description": "A standalone, zero-dependency transaction builder for the XRP Ledger",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --experimental-vm-modules node_modules/.bin/vitest run",
+    "test:watch": "node --experimental-vm-modules node_modules/.bin/vitest",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "xrp",
+    "xrpl",
+    "transaction",
+    "builder",
+    "ripple",
+    "ledger",
+    "blockchain",
+    "crypto"
+  ],
+  "author": "Jonathan Dobson",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "vitest": "^3.2.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
