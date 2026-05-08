@@ -42,6 +42,60 @@ import { DelegateSetTx } from './transactions/delegate-set.js';
 import { DIDSetTx } from './transactions/did-set.js';
 import { DIDDeleteTx } from './transactions/did-delete.js';
 
+// AMM
+import { AMMCreateTx } from './transactions/amm-create.js';
+import { AMMDepositTx } from './transactions/amm-deposit.js';
+import { AMMWithdrawTx } from './transactions/amm-withdraw.js';
+import { AMMVoteTx } from './transactions/amm-vote.js';
+import { AMMBidTx } from './transactions/amm-bid.js';
+import { AMMClawbackTx } from './transactions/amm-clawback.js';
+import { AMMDeleteTx } from './transactions/amm-delete.js';
+
+// XChain
+import { XChainCreateBridgeTx } from './transactions/xchain-create-bridge.js';
+import { XChainModifyBridgeTx } from './transactions/xchain-modify-bridge.js';
+import { XChainCommitTx } from './transactions/xchain-commit.js';
+import { XChainClaimTx } from './transactions/xchain-claim.js';
+import { XChainAccountCreateCommitTx } from './transactions/xchain-account-create-commit.js';
+import { XChainCreateClaimIDTx } from './transactions/xchain-create-claim-id.js';
+import { XChainAddClaimAttestationTx } from './transactions/xchain-add-claim-attestation.js';
+import { XChainAddAccountCreateAttestationTx } from './transactions/xchain-add-account-create-attestation.js';
+
+// Vaults
+import { VaultCreateTx } from './transactions/vault-create.js';
+import { VaultDepositTx } from './transactions/vault-deposit.js';
+import { VaultWithdrawTx } from './transactions/vault-withdraw.js';
+import { VaultSetTx } from './transactions/vault-set.js';
+import { VaultDeleteTx } from './transactions/vault-delete.js';
+import { VaultClawbackTx } from './transactions/vault-clawback.js';
+
+// Loans
+import { LoanSetTx } from './transactions/loan-set.js';
+import { LoanDeleteTx } from './transactions/loan-delete.js';
+import { LoanManageTx } from './transactions/loan-manage.js';
+import { LoanPayTx } from './transactions/loan-pay.js';
+import { LoanBrokerSetTx } from './transactions/loan-broker-set.js';
+import { LoanBrokerDeleteTx } from './transactions/loan-broker-delete.js';
+import { LoanBrokerCoverClawbackTx } from './transactions/loan-broker-cover-clawback.js';
+import { LoanBrokerCoverDepositTx } from './transactions/loan-broker-cover-deposit.js';
+import { LoanBrokerCoverWithdrawTx } from './transactions/loan-broker-cover-withdraw.js';
+
+// Credentials
+import { CredentialCreateTx } from './transactions/credential-create.js';
+import { CredentialAcceptTx } from './transactions/credential-accept.js';
+import { CredentialDeleteTx } from './transactions/credential-delete.js';
+
+// Oracles
+import { OracleSetTx } from './transactions/oracle-set.js';
+import { OracleDeleteTx } from './transactions/oracle-delete.js';
+
+// Permissioned Domain
+import { PermissionedDomainSetTx } from './transactions/permissioned-domain-set.js';
+import { PermissionedDomainDeleteTx } from './transactions/permissioned-domain-delete.js';
+
+// Batch
+import { BatchTx } from './transactions/batch.js';
+
 // ─── Registry map ────────────────────────────────────────────────────
 
 type TransactionConstructor = new (props: Record<string, unknown>) => Transaction;
@@ -89,6 +143,60 @@ const registryMap: Partial<Record<TransactionType, TransactionConstructor>> = {
   MPTokenIssuanceDestroy: MPTokenIssuanceDestroyTx as unknown as TransactionConstructor,
   MPTokenIssuanceSet: MPTokenIssuanceSetTx as unknown as TransactionConstructor,
   MPTokenAuthorize: MPTokenAuthorizeTx as unknown as TransactionConstructor,
+
+  // AMM
+  AMMCreate: AMMCreateTx as unknown as TransactionConstructor,
+  AMMDeposit: AMMDepositTx as unknown as TransactionConstructor,
+  AMMWithdraw: AMMWithdrawTx as unknown as TransactionConstructor,
+  AMMVote: AMMVoteTx as unknown as TransactionConstructor,
+  AMMBid: AMMBidTx as unknown as TransactionConstructor,
+  AMMClawback: AMMClawbackTx as unknown as TransactionConstructor,
+  AMMDelete: AMMDeleteTx as unknown as TransactionConstructor,
+
+  // XChain
+  XChainCreateBridge: XChainCreateBridgeTx as unknown as TransactionConstructor,
+  XChainModifyBridge: XChainModifyBridgeTx as unknown as TransactionConstructor,
+  XChainCommit: XChainCommitTx as unknown as TransactionConstructor,
+  XChainClaim: XChainClaimTx as unknown as TransactionConstructor,
+  XChainAccountCreateCommit: XChainAccountCreateCommitTx as unknown as TransactionConstructor,
+  XChainCreateClaimID: XChainCreateClaimIDTx as unknown as TransactionConstructor,
+  XChainAddClaimAttestation: XChainAddClaimAttestationTx as unknown as TransactionConstructor,
+  XChainAddAccountCreateAttestation: XChainAddAccountCreateAttestationTx as unknown as TransactionConstructor,
+
+  // Vaults
+  VaultCreate: VaultCreateTx as unknown as TransactionConstructor,
+  VaultDeposit: VaultDepositTx as unknown as TransactionConstructor,
+  VaultWithdraw: VaultWithdrawTx as unknown as TransactionConstructor,
+  VaultSet: VaultSetTx as unknown as TransactionConstructor,
+  VaultDelete: VaultDeleteTx as unknown as TransactionConstructor,
+  VaultClawback: VaultClawbackTx as unknown as TransactionConstructor,
+
+  // Loans
+  LoanSet: LoanSetTx as unknown as TransactionConstructor,
+  LoanDelete: LoanDeleteTx as unknown as TransactionConstructor,
+  LoanManage: LoanManageTx as unknown as TransactionConstructor,
+  LoanPay: LoanPayTx as unknown as TransactionConstructor,
+  LoanBrokerSet: LoanBrokerSetTx as unknown as TransactionConstructor,
+  LoanBrokerDelete: LoanBrokerDeleteTx as unknown as TransactionConstructor,
+  LoanBrokerCoverClawback: LoanBrokerCoverClawbackTx as unknown as TransactionConstructor,
+  LoanBrokerCoverDeposit: LoanBrokerCoverDepositTx as unknown as TransactionConstructor,
+  LoanBrokerCoverWithdraw: LoanBrokerCoverWithdrawTx as unknown as TransactionConstructor,
+
+  // Credentials
+  CredentialCreate: CredentialCreateTx as unknown as TransactionConstructor,
+  CredentialAccept: CredentialAcceptTx as unknown as TransactionConstructor,
+  CredentialDelete: CredentialDeleteTx as unknown as TransactionConstructor,
+
+  // Oracles
+  OracleSet: OracleSetTx as unknown as TransactionConstructor,
+  OracleDelete: OracleDeleteTx as unknown as TransactionConstructor,
+
+  // Permissioned Domain
+  PermissionedDomainSet: PermissionedDomainSetTx as unknown as TransactionConstructor,
+  PermissionedDomainDelete: PermissionedDomainDeleteTx as unknown as TransactionConstructor,
+
+  // Batch
+  Batch: BatchTx as unknown as TransactionConstructor,
 
   // DID
   DIDSet: DIDSetTx as unknown as TransactionConstructor,

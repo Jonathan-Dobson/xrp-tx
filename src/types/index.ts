@@ -19,6 +19,9 @@ export type {
   AuthorizeCredential,
   SignerEntry,
   OracleDataSeries,
+  AuthAccount,
+  XChainClaimAttestation,
+  XChainAccountCreateAttestation,
 } from './common.js';
 
 export type {

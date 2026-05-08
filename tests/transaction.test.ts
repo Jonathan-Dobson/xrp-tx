@@ -464,7 +464,7 @@ describe('TransactionRegistry', () => {
   });
 
   it('returns undefined for unregistered types', () => {
-    expect(TransactionRegistry.get('VaultCreate')).toBeUndefined();
+    expect(TransactionRegistry.get('FakeType' as any)).toBeUndefined();
   });
 });
 

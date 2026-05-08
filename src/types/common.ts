@@ -80,3 +80,54 @@ export interface OracleDataSeries {
     readonly Scale?: number;
   };
 }
+
+/**
+ * An authorized account for AMM bidding.
+ */
+export interface AuthAccount {
+  readonly AuthAccount: {
+    readonly Account: string;
+  };
+}
+
+/**
+ * An XChain claim attestation.
+ */
+export interface XChainClaimAttestation {
+  readonly XChainClaimAttestationBatch: {
+    readonly XChainBridge: XChainBridge;
+    readonly XChainClaimID: string | number;
+    readonly Destination: string;
+    readonly Amount: string | { currency: string; issuer: string; value: string };
+    readonly Attestations: Array<{
+      readonly Attestation: {
+        readonly AttestationPubKey: string;
+        readonly AttestationSignature: string;
+        readonly Amount: string | { currency: string; issuer: string; value: string };
+        readonly AttestationRewardAccount: string;
+        readonly WasLockingChainSend: 0 | 1;
+      };
+    }>;
+  };
+}
+
+/**
+ * An XChain account create attestation.
+ */
+export interface XChainAccountCreateAttestation {
+  readonly XChainAccountCreateAttestationBatch: {
+    readonly XChainBridge: XChainBridge;
+    readonly XChainAccountCreateCount: string | number;
+    readonly Destination: string;
+    readonly Amount: string | { currency: string; issuer: string; value: string };
+    readonly Attestations: Array<{
+      readonly Attestation: {
+        readonly AttestationPubKey: string;
+        readonly AttestationSignature: string;
+        readonly Amount: string | { currency: string; issuer: string; value: string };
+        readonly AttestationRewardAccount: string;
+        readonly WasLockingChainSend: 0 | 1;
+      };
+    }>;
+  };
+}

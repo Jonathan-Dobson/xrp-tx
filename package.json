@@ -1,6 +1,6 @@
 {
   "name": "xrp-tx",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "A standalone, zero-dependency transaction builder for the XRP Ledger",
   "type": "module",
   "main": "./dist/index.js",
@@ -41,5 +41,14 @@
   },
   "engines": {
     "node": ">=20.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jonathan-Dobson/xrp-tx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jonathan-Dobson/xrp-tx/issues"
+  },
+  "homepage": "https://github.com/Jonathan-Dobson/xrp-tx#readme"
+
 }
