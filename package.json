@@ -1,6 +1,6 @@
 {
   "name": "xrp-tx",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A standalone, zero-dependency transaction builder for the XRP Ledger",
   "type": "module",
   "main": "./dist/index.js",
