@@ -1,38 +1,42 @@
 /**
- * AMMVote transaction — vote on the trading fee for an Automated Market Maker.
+ * AMMVote transaction — vote on the trading fee of an AMM instance.
+ *
+ * @see https://xrpl.org/ammvote.html
  */
 import type { BaseTransactionFields } from '../types/base.js';
 import { AMMTransaction } from '../groups/amm.js';
 import { ValidationError } from '../errors.js';
-import { isNumber } from '../validation/helpers.js';
+import { isRecord, isNumber } from '../validation/helpers.js';
 
 export interface AMMVoteTxFields extends BaseTransactionFields {
   readonly TransactionType: 'AMMVote';
-  readonly Asset: { currency: string; issuer?: string };
-  readonly Asset2: { currency: string; issuer?: string };
+  readonly Asset: Record<string, unknown>;
+  readonly Asset2: Record<string, unknown>;
+  /** The proposed trading fee (0-1000). */
   readonly TradingFee: number;
 }
 
 export class AMMVoteTx extends AMMTransaction {
   override readonly TransactionType = 'AMMVote' as const;
-  readonly Asset!: { currency: string; issuer?: string };
-  readonly Asset2!: { currency: string; issuer?: string };
-  readonly TradingFee!: number;
+
+  readonly Asset: Record<string, unknown> = undefined as any;
+  readonly Asset2: Record<string, unknown> = undefined as any;
+  readonly TradingFee: number = undefined as any;
 
   constructor(props: AMMVoteTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'AMMVote' } as BaseTransactionFields);
-    this.Asset = p['Asset'] as { currency: string; issuer?: string };
-    this.Asset2 = p['Asset2'] as { currency: string; issuer?: string };
+    this.Asset = p['Asset'] as Record<string, unknown>;
+    this.Asset2 = p['Asset2'] as Record<string, unknown>;
     this.TradingFee = p['TradingFee'] as number;
   }
 
   override validate(): void {
     super.validate();
-    if (!this.Asset) throw new ValidationError('AMMVote: missing Asset');
-    if (!this.Asset2) throw new ValidationError('AMMVote: missing Asset2');
-    if (!isNumber(this.TradingFee)) throw new ValidationError('AMMVote: missing TradingFee');
-    if (this.TradingFee < 0 || this.TradingFee > 1000)
-      throw new ValidationError('AMMVote: TradingFee must be between 0 and 1000');
+    if (!isRecord(this.Asset)) throw new ValidationError('AMMVote: missing or invalid Asset');
+    if (!isRecord(this.Asset2)) throw new ValidationError('AMMVote: missing or invalid Asset2');
+    if (!isNumber(this.TradingFee) || this.TradingFee < 0 || this.TradingFee > 1000) {
+      throw new ValidationError('AMMVote: TradingFee must be 0-1000');
+    }
   }
 }

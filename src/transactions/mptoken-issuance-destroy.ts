@@ -1,5 +1,5 @@
 /**
- * MPTokenIssuanceDestroy — destroy an MPT issuance.
+ * MPTokenIssuanceDestroy transaction — permanently remove an MPT issuance from the ledger.
  */
 import type { BaseTransactionFields } from '../types/base.js';
 import { TokenTransaction } from '../groups/token.js';
@@ -8,12 +8,15 @@ import { isString } from '../validation/helpers.js';
 
 export interface MPTokenIssuanceDestroyTxFields extends BaseTransactionFields {
   readonly TransactionType: 'MPTokenIssuanceDestroy';
+  /** The unique identifier of the MPT issuance. */
   readonly MPTokenIssuanceID: string;
 }
 
 export class MPTokenIssuanceDestroyTx extends TokenTransaction {
   override readonly TransactionType = 'MPTokenIssuanceDestroy' as const;
-  readonly MPTokenIssuanceID!: string;
+
+  /** The unique identifier of the MPT issuance. */
+  readonly MPTokenIssuanceID: string = undefined as any;
 
   constructor(props: MPTokenIssuanceDestroyTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
@@ -21,11 +24,12 @@ export class MPTokenIssuanceDestroyTx extends TokenTransaction {
     this.MPTokenIssuanceID = p['MPTokenIssuanceID'] as string;
   }
 
-  override affectsTokenBalance(): boolean { return true; }
+  override affectsTokenBalance(): boolean { return false; }
 
   override validate(): void {
     super.validate();
-    if (!isString(this.MPTokenIssuanceID))
-      throw new ValidationError('MPTokenIssuanceDestroy: missing MPTokenIssuanceID');
+    if (!isString(this.MPTokenIssuanceID)) {
+      throw new ValidationError('MPTokenIssuanceDestroy: missing or invalid MPTokenIssuanceID');
+    }
   }
 }

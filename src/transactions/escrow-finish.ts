@@ -1,41 +1,48 @@
 /**
- * EscrowFinish transaction — release a held payment.
+ * EscrowFinish transaction — release XRP from a locked escrow.
+ *
+ * @see https://xrpl.org/escrowfinish.html
  */
 import type { BaseTransactionFields } from '../types/base.js';
 import { Transaction, assignDefined } from '../transaction.js';
 import { ValidationError } from '../errors.js';
-import { isAccount, isNumber, isString } from '../validation/helpers.js';
+import { isAccount, isNumber } from '../validation/helpers.js';
 
 export interface EscrowFinishTxFields extends BaseTransactionFields {
   readonly TransactionType: 'EscrowFinish';
+  /** The address that created the escrow. */
   readonly Owner: string;
+  /** The sequence number of the EscrowCreate transaction. */
   readonly OfferSequence: number;
-  readonly Condition?: string;
+  /** The cryptographic condition fulfillment. */
   readonly Fulfillment?: string;
+  /** The cryptographic condition (must match creation). */
+  readonly Condition?: string;
 }
 
 export class EscrowFinishTx extends Transaction {
   override readonly TransactionType = 'EscrowFinish' as const;
-  readonly Owner!: string;
-  readonly OfferSequence!: number;
-  readonly Condition?: string;
-  readonly Fulfillment?: string;
+
+  /** Escrow creator. */
+  readonly Owner: string = undefined as any;
+
+  /** Sequence number of EscrowCreate. */
+  readonly OfferSequence: number = undefined as any;
+
+  readonly Fulfillment?: string = undefined;
+  readonly Condition?: string = undefined;
 
   constructor(props: EscrowFinishTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'EscrowFinish' } as BaseTransactionFields);
     this.Owner = p['Owner'] as string;
     this.OfferSequence = p['OfferSequence'] as number;
-    assignDefined(this, p, ['Condition', 'Fulfillment']);
+    assignDefined(this, p, ['Fulfillment', 'Condition']);
   }
 
   override validate(): void {
     super.validate();
-    if (!isAccount(this.Owner)) throw new ValidationError('EscrowFinish: invalid Owner');
-    if (!isNumber(this.OfferSequence)) throw new ValidationError('EscrowFinish: invalid OfferSequence');
-    if (this.Condition !== undefined && !isString(this.Condition))
-      throw new ValidationError('EscrowFinish: Condition must be a string');
-    if (this.Fulfillment !== undefined && !isString(this.Fulfillment))
-      throw new ValidationError('EscrowFinish: Fulfillment must be a string');
+    if (!isAccount(this.Owner)) throw new ValidationError('EscrowFinish: missing or invalid Owner');
+    if (!isNumber(this.OfferSequence)) throw new ValidationError('EscrowFinish: missing or invalid OfferSequence');
   }
 }

@@ -1,36 +1,31 @@
 /**
- * LoanBrokerCoverClawback transaction — claw back loan broker cover.
+ * LoanBrokerCoverClawback transaction — reclaim coverage assets from a loan broker.
  */
-import type { BaseTransactionFields } from '../types/base.js';
 import type { Amount } from '../types/amounts.js';
-import { LoanTransaction } from '../groups/loan.js';
-import { assignDefined } from '../transaction.js';
+import type { BaseTransactionFields } from '../types/base.js';
+import { Transaction } from '../transaction.js';
 import { ValidationError } from '../errors.js';
-import { isAmount, isAccount } from '../validation/helpers.js';
+import { isAmount } from '../validation/helpers.js';
 
 export interface LoanBrokerCoverClawbackTxFields extends BaseTransactionFields {
   readonly TransactionType: 'LoanBrokerCoverClawback';
-  readonly Broker: string;
-  readonly Amount?: Amount;
+  /** The amount of coverage asset to claw back. */
+  readonly Amount: Amount;
 }
 
-export class LoanBrokerCoverClawbackTx extends LoanTransaction {
+export class LoanBrokerCoverClawbackTx extends Transaction {
   override readonly TransactionType = 'LoanBrokerCoverClawback' as const;
-  readonly Broker!: string;
-  readonly Amount?: Amount;
+
+  readonly Amount: Amount = undefined as any;
 
   constructor(props: LoanBrokerCoverClawbackTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'LoanBrokerCoverClawback' } as BaseTransactionFields);
-    this.Broker = p['Broker'] as string;
-    assignDefined(this, p, ['Amount']);
+    this.Amount = p['Amount'] as Amount;
   }
 
   override validate(): void {
     super.validate();
-    if (!isAccount(this.Broker))
-      throw new ValidationError('LoanBrokerCoverClawback: invalid Broker');
-    if (this.Amount !== undefined && !isAmount(this.Amount))
-      throw new ValidationError('LoanBrokerCoverClawback: invalid Amount');
+    if (!isAmount(this.Amount)) throw new ValidationError('LoanBrokerCoverClawback: missing or invalid Amount');
   }
 }

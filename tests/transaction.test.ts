@@ -13,6 +13,10 @@ import {
   CheckCashTx,
   CheckCancelTx,
   NFTokenMintTx,
+  NFTokenCreateOfferTx,
+  NFTokenAcceptOfferTx,
+  MPTokenIssuanceCreateTx,
+  MPTokenAuthorizeTx,
   TicketCreateTx,
   DepositPreauthTx,
   ClawbackTx,
@@ -465,6 +469,31 @@ describe('TransactionRegistry', () => {
 
   it('returns undefined for unregistered types', () => {
     expect(TransactionRegistry.get('FakeType' as any)).toBeUndefined();
+  });
+});
+
+// ─── Property Discovery ──────────────────────────────────────────────
+
+describe('Property visibility and toJSON serialization', () => {
+  it('captures required fields in OfferCancel', () => {
+    const tx = new OfferCancelTx({ Account: ALICE, OfferSequence: 42 });
+    const json = tx.toJSON();
+    expect(json).toHaveProperty('OfferSequence', 42);
+    expect(Object.keys(json)).toContain('OfferSequence');
+  });
+
+  it('captures required fields in NFTokenAcceptOffer', () => {
+    const tx = new NFTokenAcceptOfferTx({ Account: ALICE, NFTokenSellOffer: 'ABC' });
+    const json = tx.toJSON();
+    expect(json).toHaveProperty('NFTokenSellOffer', 'ABC');
+    expect(Object.keys(json)).toContain('NFTokenSellOffer');
+  });
+
+  it('captures required fields in SignerListSet', () => {
+    const tx = new SignerListSetTx({ Account: ALICE, SignerQuorum: 2 });
+    const json = tx.toJSON();
+    expect(json).toHaveProperty('SignerQuorum', 2);
+    expect(Object.keys(json)).toContain('SignerQuorum');
   });
 });
 

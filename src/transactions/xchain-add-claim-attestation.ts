@@ -1,62 +1,60 @@
 /**
- * XChainAddClaimAttestation transaction — add an attestation to a cross-chain claim.
+ * XChainAddClaimAttestation transaction — provide a witness signature for a cross-chain claim.
  */
 import type { BaseTransactionFields } from '../types/base.js';
-import type { XChainBridge } from '../types/common.js';
-import type { Amount } from '../types/amounts.js';
 import { XChainTransaction } from '../groups/xchain.js';
 import { ValidationError } from '../errors.js';
-import { isXChainBridge, isAmount, isAccount, isString } from '../validation/helpers.js';
+import { isRecord, isNumber, isString } from '../validation/helpers.js';
 
 export interface XChainAddClaimAttestationTxFields extends BaseTransactionFields {
   readonly TransactionType: 'XChainAddClaimAttestation';
-  readonly XChainBridge: XChainBridge;
-  readonly XChainClaimID: string | number;
-  readonly Destination: string;
-  readonly Amount: Amount;
-  readonly AttestationPubKey: string;
-  readonly AttestationSignature: string;
-  readonly AttestationRewardAccount: string;
-  readonly WasLockingChainSend: 0 | 1;
+  /** Definition of the bridge. */
+  readonly XChainBridge: Record<string, unknown>;
+  /** The claim ID. */
+  readonly XChainClaimID: number;
+  /** The amount being claimed. */
+  readonly Amount: string;
+  /** The destination account. */
+  readonly Destination?: string;
+  /** The source account on the other chain. */
+  readonly OtherChainSource: string;
+  /** Public key of the attesting server. */
+  readonly PublicKey: string;
+  /** The attestation signature. */
+  readonly Signature: string;
+  /** Sequence number of the attestation. */
+  readonly XChainAttestationSequence: number;
 }
 
 export class XChainAddClaimAttestationTx extends XChainTransaction {
   override readonly TransactionType = 'XChainAddClaimAttestation' as const;
-  readonly XChainBridge!: XChainBridge;
-  readonly XChainClaimID!: string | number;
-  readonly Destination!: string;
-  readonly Amount!: Amount;
-  readonly AttestationPubKey!: string;
-  readonly AttestationSignature!: string;
-  readonly AttestationRewardAccount!: string;
-  readonly WasLockingChainSend!: 0 | 1;
+
+  readonly XChainBridge: Record<string, unknown> = undefined as any;
+  readonly XChainClaimID: number = undefined as any;
+  readonly Amount: string = undefined as any;
+  readonly Destination?: string = undefined;
+  readonly OtherChainSource: string = undefined as any;
+  readonly PublicKey: string = undefined as any;
+  readonly Signature: string = undefined as any;
+  readonly XChainAttestationSequence: number = undefined as any;
 
   constructor(props: XChainAddClaimAttestationTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'XChainAddClaimAttestation' } as BaseTransactionFields);
-    this.XChainBridge = p['XChainBridge'] as XChainBridge;
-    this.XChainClaimID = p['XChainClaimID'] as string | number;
+    this.XChainBridge = p['XChainBridge'] as Record<string, unknown>;
+    this.XChainClaimID = p['XChainClaimID'] as number;
+    this.Amount = p['Amount'] as string;
     this.Destination = p['Destination'] as string;
-    this.Amount = p['Amount'] as Amount;
-    this.AttestationPubKey = p['AttestationPubKey'] as string;
-    this.AttestationSignature = p['AttestationSignature'] as string;
-    this.AttestationRewardAccount = p['AttestationRewardAccount'] as string;
-    this.WasLockingChainSend = p['WasLockingChainSend'] as 0 | 1;
+    this.OtherChainSource = p['OtherChainSource'] as string;
+    this.PublicKey = p['PublicKey'] as string;
+    this.Signature = p['Signature'] as string;
+    this.XChainAttestationSequence = p['XChainAttestationSequence'] as number;
   }
 
   override validate(): void {
     super.validate();
-    if (!isXChainBridge(this.XChainBridge))
-      throw new ValidationError('XChainAddClaimAttestation: invalid XChainBridge');
-    if (!isAccount(this.Destination))
-      throw new ValidationError('XChainAddClaimAttestation: invalid Destination');
-    if (!isAmount(this.Amount))
-      throw new ValidationError('XChainAddClaimAttestation: invalid Amount');
-    if (!isString(this.AttestationPubKey))
-      throw new ValidationError('XChainAddClaimAttestation: missing AttestationPubKey');
-    if (!isString(this.AttestationSignature))
-      throw new ValidationError('XChainAddClaimAttestation: missing AttestationSignature');
-    if (!isAccount(this.AttestationRewardAccount))
-      throw new ValidationError('XChainAddClaimAttestation: invalid AttestationRewardAccount');
+    if (!isRecord(this.XChainBridge)) throw new ValidationError('XChainAddClaimAttestation: missing or invalid XChainBridge');
+    if (!isNumber(this.XChainClaimID)) throw new ValidationError('XChainAddClaimAttestation: missing or invalid XChainClaimID');
+    if (!isString(this.PublicKey)) throw new ValidationError('XChainAddClaimAttestation: missing or invalid PublicKey');
   }
 }

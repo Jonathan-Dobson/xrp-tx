@@ -1,5 +1,7 @@
 /**
- * MPTokenIssuanceCreate transaction — create a new Multi-Purpose Token issuance.
+ * MPTokenIssuanceCreate transaction — create a new Multi-Purpose Token (MPT) issuance.
+ *
+ * @see https://xrpl.org/mptokenissuancecreate.html
  */
 import type { BaseTransactionFields } from '../types/base.js';
 import { TokenTransaction } from '../groups/token.js';
@@ -9,18 +11,23 @@ import { isString, isNumber } from '../validation/helpers.js';
 
 export interface MPTokenIssuanceCreateTxFields extends BaseTransactionFields {
   readonly TransactionType: 'MPTokenIssuanceCreate';
+  /** The maximum amount of tokens that can be issued. */
   readonly MaximumAmount?: string;
+  /** The asset scale for the token (0-15). */
   readonly AssetScale?: number;
+  /** The transfer fee for the token (0-50,000 basis points). */
   readonly TransferFee?: number;
+  /** Arbitrary metadata for the issuance. */
   readonly MPTokenMetadata?: string;
 }
 
 export class MPTokenIssuanceCreateTx extends TokenTransaction {
   override readonly TransactionType = 'MPTokenIssuanceCreate' as const;
-  readonly MaximumAmount?: string;
-  readonly AssetScale?: number;
-  readonly TransferFee?: number;
-  readonly MPTokenMetadata?: string;
+
+  readonly MaximumAmount?: string = undefined;
+  readonly AssetScale?: number = undefined;
+  readonly TransferFee?: number = undefined;
+  readonly MPTokenMetadata?: string = undefined;
 
   constructor(props: MPTokenIssuanceCreateTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;

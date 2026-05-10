@@ -7,6 +7,10 @@ A standalone, zero-dependency, class-based transaction builder for the XRP Ledge
 [![NPM Version](https://img.shields.io/npm/v/xrp-tx.svg)](https://www.npmjs.com/package/xrp-tx)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+## Documentation
+
+For a comprehensive guide to all 70+ transaction types and advanced usage patterns, see the [API Documentation](API_DOCUMENTATION.md).
+
 ## Features
 
 - **🚀 Zero Dependencies:** No reliance on `xrpl.js`, `ripple-binary-codec`, or any other runtime libraries.
@@ -16,6 +20,7 @@ A standalone, zero-dependency, class-based transaction builder for the XRP Ledge
 - **💎 Immutable Updates:** Use the `.with()` pattern to create modified copies of transactions without side effects.
 - **🔌 Registry Pattern:** Easily instantiate transactions from JSON using the central registry or factory methods.
 - **🤝 XRPL.js Compatible:** `toJSON()` output matches the exact shape required by `xrpl.js` and the XRPL ledger.
+- **🎯 Reliability Gold Standard:** 100% property discovery through explicit initialization, ensuring safe serialization in any environment (Node, Browser, Cloudflare Workers).
 
 ## Installation
 
@@ -71,21 +76,6 @@ console.log(tx2.Fee); // '12'
 console.log(tx1.Fee); // undefined (tx1 remains unchanged)
 ```
 
-### Dynamic Instantiation from JSON
-
-```typescript
-import { Transaction } from 'xrp-tx';
-
-const blob = {
-  TransactionType: 'AccountSet',
-  Account: 'rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh',
-  SetFlag: 8,
-};
-
-const tx = Transaction.create(blob.TransactionType, blob);
-// tx is an instance of AccountSetTx
-```
-
 ## Supported Transaction Types (71)
 
 `xrp-tx` provides 100% coverage for standard and experimental XRPL transaction types, including:
@@ -105,16 +95,6 @@ Modern XRPL development often requires high-fidelity transaction construction wi
 2. **Transaction Builders:** Provides a clean UI-to-JSON mapping with instant validation.
 3. **Backend Services:** Robust, typed transaction generation for high-throughput environments.
 4. **Tooling:** A solid foundation for explorers, wallets, and signing tools.
-
-## Architecture
-
-The library uses a structured hierarchy to maximize code reuse and provide logical groupings:
-
-- `Transaction` (Abstract Base)
-  - `AccountTransaction` (Shared account logic)
-  - `PaymentTransaction` (Shared value transfer logic)
-  - `TokenTransaction` (NFT/MPT/TrustSet logic)
-  - `AMMTransaction` / `XChainTransaction` / etc.
 
 ## License
 

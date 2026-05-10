@@ -1,21 +1,24 @@
 /**
- * CredentialAccept transaction — accept an authorization credential.
+ * CredentialAccept transaction — accept a credential that was issued to you.
  */
 import type { BaseTransactionFields } from '../types/base.js';
-import { CredentialTransaction } from '../groups/credential.js';
+import { Transaction } from '../transaction.js';
 import { ValidationError } from '../errors.js';
 import { isAccount, isString } from '../validation/helpers.js';
 
 export interface CredentialAcceptTxFields extends BaseTransactionFields {
   readonly TransactionType: 'CredentialAccept';
+  /** The issuer of the credential. */
   readonly Issuer: string;
+  /** The type of the credential. */
   readonly CredentialType: string;
 }
 
-export class CredentialAcceptTx extends CredentialTransaction {
+export class CredentialAcceptTx extends Transaction {
   override readonly TransactionType = 'CredentialAccept' as const;
-  readonly Issuer!: string;
-  readonly CredentialType!: string;
+
+  readonly Issuer: string = undefined as any;
+  readonly CredentialType: string = undefined as any;
 
   constructor(props: CredentialAcceptTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
@@ -26,9 +29,7 @@ export class CredentialAcceptTx extends CredentialTransaction {
 
   override validate(): void {
     super.validate();
-    if (!isAccount(this.Issuer))
-      throw new ValidationError('CredentialAccept: invalid Issuer');
-    if (!isString(this.CredentialType))
-      throw new ValidationError('CredentialAccept: missing CredentialType');
+    if (!isAccount(this.Issuer)) throw new ValidationError('CredentialAccept: missing or invalid Issuer');
+    if (!isString(this.CredentialType)) throw new ValidationError('CredentialAccept: missing or invalid CredentialType');
   }
 }

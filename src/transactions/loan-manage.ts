@@ -1,33 +1,30 @@
 /**
- * LoanManage transaction — manage an active loan.
+ * LoanManage transaction — manage the terms or status of an active loan.
  */
 import type { BaseTransactionFields } from '../types/base.js';
-import { LoanTransaction } from '../groups/loan.js';
+import { Transaction } from '../transaction.js';
 import { ValidationError } from '../errors.js';
+import { isString } from '../validation/helpers.js';
 
 export interface LoanManageTxFields extends BaseTransactionFields {
   readonly TransactionType: 'LoanManage';
-  readonly LoanID: string;
-  readonly Action: string;
+  /** The asset associated with the loan. */
+  readonly Asset: string;
 }
 
-export class LoanManageTx extends LoanTransaction {
+export class LoanManageTx extends Transaction {
   override readonly TransactionType = 'LoanManage' as const;
-  readonly LoanID!: string;
-  readonly Action!: string;
+
+  readonly Asset: string = undefined as any;
 
   constructor(props: LoanManageTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'LoanManage' } as BaseTransactionFields);
-    this.LoanID = p['LoanID'] as string;
-    this.Action = p['Action'] as string;
+    this.Asset = p['Asset'] as string;
   }
 
   override validate(): void {
     super.validate();
-    if (typeof this.LoanID !== 'string')
-      throw new ValidationError('LoanManage: LoanID must be a string');
-    if (typeof this.Action !== 'string')
-      throw new ValidationError('LoanManage: Action must be a string');
+    if (!isString(this.Asset)) throw new ValidationError('LoanManage: missing or invalid Asset');
   }
 }

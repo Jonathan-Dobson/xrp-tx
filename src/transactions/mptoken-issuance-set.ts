@@ -1,22 +1,28 @@
 /**
- * MPTokenIssuanceSet — update properties of an MPT issuance.
+ * MPTokenIssuanceSet transaction — update the flags or metadata of an MPT issuance.
  */
 import type { BaseTransactionFields } from '../types/base.js';
 import { TokenTransaction } from '../groups/token.js';
 import { assignDefined } from '../transaction.js';
 import { ValidationError } from '../errors.js';
-import { isString, isAccount } from '../validation/helpers.js';
+import { isString } from '../validation/helpers.js';
 
 export interface MPTokenIssuanceSetTxFields extends BaseTransactionFields {
   readonly TransactionType: 'MPTokenIssuanceSet';
+  /** The unique identifier of the MPT issuance. */
   readonly MPTokenIssuanceID: string;
+  /** The account of the holder to update (for specific flags). */
   readonly Holder?: string;
 }
 
 export class MPTokenIssuanceSetTx extends TokenTransaction {
   override readonly TransactionType = 'MPTokenIssuanceSet' as const;
-  readonly MPTokenIssuanceID!: string;
-  readonly Holder?: string;
+
+  /** The unique identifier of the MPT issuance. */
+  readonly MPTokenIssuanceID: string = undefined as any;
+
+  /** The account of the holder to update (for specific flags). */
+  readonly Holder?: string = undefined;
 
   constructor(props: MPTokenIssuanceSetTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
@@ -29,9 +35,8 @@ export class MPTokenIssuanceSetTx extends TokenTransaction {
 
   override validate(): void {
     super.validate();
-    if (!isString(this.MPTokenIssuanceID))
-      throw new ValidationError('MPTokenIssuanceSet: missing MPTokenIssuanceID');
-    if (this.Holder !== undefined && !isAccount(this.Holder))
-      throw new ValidationError('MPTokenIssuanceSet: invalid Holder');
+    if (!isString(this.MPTokenIssuanceID)) {
+      throw new ValidationError('MPTokenIssuanceSet: missing or invalid MPTokenIssuanceID');
+    }
   }
 }

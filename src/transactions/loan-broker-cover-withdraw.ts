@@ -1,35 +1,31 @@
 /**
- * LoanBrokerCoverWithdraw transaction — withdraw funds from loan broker cover.
+ * LoanBrokerCoverWithdraw transaction — withdraw coverage assets from a loan broker account.
  */
-import type { BaseTransactionFields } from '../types/base.js';
 import type { Amount } from '../types/amounts.js';
-import { LoanTransaction } from '../groups/loan.js';
+import type { BaseTransactionFields } from '../types/base.js';
+import { Transaction } from '../transaction.js';
 import { ValidationError } from '../errors.js';
-import { isAmount, isAccount } from '../validation/helpers.js';
+import { isAmount } from '../validation/helpers.js';
 
 export interface LoanBrokerCoverWithdrawTxFields extends BaseTransactionFields {
   readonly TransactionType: 'LoanBrokerCoverWithdraw';
-  readonly Broker: string;
+  /** The amount to withdraw. */
   readonly Amount: Amount;
 }
 
-export class LoanBrokerCoverWithdrawTx extends LoanTransaction {
+export class LoanBrokerCoverWithdrawTx extends Transaction {
   override readonly TransactionType = 'LoanBrokerCoverWithdraw' as const;
-  readonly Broker!: string;
-  readonly Amount!: Amount;
+
+  readonly Amount: Amount = undefined as any;
 
   constructor(props: LoanBrokerCoverWithdrawTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'LoanBrokerCoverWithdraw' } as BaseTransactionFields);
-    this.Broker = p['Broker'] as string;
     this.Amount = p['Amount'] as Amount;
   }
 
   override validate(): void {
     super.validate();
-    if (!isAccount(this.Broker))
-      throw new ValidationError('LoanBrokerCoverWithdraw: invalid Broker');
-    if (!isAmount(this.Amount))
-      throw new ValidationError('LoanBrokerCoverWithdraw: invalid Amount');
+    if (!isAmount(this.Amount)) throw new ValidationError('LoanBrokerCoverWithdraw: missing or invalid Amount');
   }
 }

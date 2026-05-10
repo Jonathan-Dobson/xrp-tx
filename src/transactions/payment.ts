@@ -1,56 +1,51 @@
 /**
- * Payment transaction — transfer value from one account to another.
+ * Payment transaction — send value (XRP or Issued Currencies) from one account to another.
+ *
+ * @see https://xrpl.org/payment.html
  */
-import type { Amount } from '../types/amounts.js';
-import type { Path } from '../types/common.js';
 import type { BaseTransactionFields } from '../types/base.js';
+import type { Amount } from '../types/amounts.js';
+import type { PathStep } from '../types/common.js';
 import type { PaymentFlagsInterface } from '../types/flags.js';
-import { PaymentFlags } from '../types/flags.js';
 import { PaymentTransaction } from '../groups/payment.js';
 import { assignDefined } from '../transaction.js';
 import { ValidationError } from '../errors.js';
-import {
-  isAmount,
-  isAccount,
-  isNumber,
-  isString,
-  isPaths,
-  isDomainID,
-  isFlagEnabled,
-} from '../validation/helpers.js';
+import { isAccount, isAmount } from '../validation/helpers.js';
 
 export interface PaymentTxFields extends BaseTransactionFields {
   readonly TransactionType: 'Payment';
+  /** The amount of currency to deliver. */
   readonly Amount: Amount;
-  readonly DeliverMax?: Amount;
+  /** The address to receive the funds. */
   readonly Destination: string;
+  /** Arbitrary destination tag for the recipient. */
   readonly DestinationTag?: number;
+  /** Hash of a check or other condition for the payment. */
   readonly InvoiceID?: string;
-  readonly Paths?: Path[];
-  readonly SendMax?: Amount;
+  /** Minimum amount to deliver (requires tfPartialPayment). */
   readonly DeliverMin?: Amount;
-  readonly CredentialIDs?: string[];
-  readonly DomainID?: string;
+  /** Payment paths for cross-currency transfers. */
+  readonly Paths?: PathStep[][];
+  /** Maximum amount to spend including fees/slippage. */
+  readonly SendMax?: Amount;
+  /** Bit-flags for this transaction. */
   readonly Flags?: number | PaymentFlagsInterface;
 }
 
-const PAYMENT_OPTIONAL = [
-  'DeliverMax', 'DestinationTag', 'InvoiceID', 'Paths',
-  'SendMax', 'DeliverMin', 'CredentialIDs', 'DomainID', 'Flags',
-] as const;
-
 export class PaymentTx extends PaymentTransaction {
   override readonly TransactionType = 'Payment' as const;
-  readonly Amount!: Amount;
-  readonly Destination!: string;
-  readonly DeliverMax?: Amount;
-  readonly DestinationTag?: number;
-  readonly InvoiceID?: string;
-  readonly Paths?: Path[];
-  readonly SendMax?: Amount;
-  readonly DeliverMin?: Amount;
-  readonly CredentialIDs?: string[];
-  readonly DomainID?: string;
+
+  /** The amount of currency to deliver. */
+  readonly Amount: Amount = undefined as any;
+
+  /** The address to receive the funds. */
+  readonly Destination: string = undefined as any;
+
+  readonly DestinationTag?: number = undefined;
+  readonly InvoiceID?: string = undefined;
+  readonly DeliverMin?: Amount = undefined;
+  readonly Paths?: PathStep[][] = undefined;
+  readonly SendMax?: Amount = undefined;
   declare readonly Flags?: number | PaymentFlagsInterface;
 
   constructor(props: PaymentTxFields | Record<string, unknown>) {
@@ -58,44 +53,25 @@ export class PaymentTx extends PaymentTransaction {
     super({ ...p, TransactionType: 'Payment' } as BaseTransactionFields);
     this.Amount = p['Amount'] as Amount;
     this.Destination = p['Destination'] as string;
-    assignDefined(this, p, PAYMENT_OPTIONAL as unknown as string[]);
+    assignDefined(this, p, ['DestinationTag', 'InvoiceID', 'DeliverMin', 'Paths', 'SendMax', 'Flags']);
   }
 
-  override getAmount(): Amount { return this.Amount; }
-  override getDestination(): string { return this.Destination; }
+  override getAmount(): Amount {
+    return this.Amount;
+  }
+
+  override getDestination(): string {
+    return this.Destination;
+  }
 
   override validate(): void {
     super.validate();
-    if (!isAmount(this.Amount))
-      throw new ValidationError('Payment: invalid Amount');
-    if (!isAccount(this.Destination))
-      throw new ValidationError('Payment: invalid Destination');
-    if (this.DestinationTag !== undefined && !isNumber(this.DestinationTag))
-      throw new ValidationError('Payment: DestinationTag must be a number');
-    if (this.InvoiceID !== undefined && !isString(this.InvoiceID))
-      throw new ValidationError('Payment: InvoiceID must be a string');
-    if (this.Paths !== undefined && !isPaths(this.Paths))
-      throw new ValidationError('Payment: invalid Paths');
-    if (this.SendMax !== undefined && !isAmount(this.SendMax))
-      throw new ValidationError('Payment: invalid SendMax');
-    if (this.DomainID !== undefined && !isDomainID(this.DomainID))
-      throw new ValidationError('Payment: invalid DomainID');
-    this.validatePartialPayment();
-  }
-
-  private validatePartialPayment(): void {
-    if (this.DeliverMin == null) return;
-    if (this.Flags == null) {
-      throw new ValidationError('Payment: tfPartialPayment flag required with DeliverMin');
+    if (!isAmount(this.Amount)) throw new ValidationError('Payment: missing or invalid Amount');
+    if (!isAccount(this.Destination)) throw new ValidationError('Payment: missing or invalid Destination');
+    
+    // Partial payment check
+    if (this.DeliverMin && !(this.Flags as any)?.tfPartialPayment && (this.Flags as any) !== 0x00020000) {
+      throw new ValidationError('Payment: DeliverMin requires tfPartialPayment flag');
     }
-    const flags = this.Flags;
-    const isPartial = typeof flags === 'number'
-      ? isFlagEnabled(flags, PaymentFlags.tfPartialPayment)
-      : (flags.tfPartialPayment ?? false);
-    if (!isPartial) {
-      throw new ValidationError('Payment: tfPartialPayment flag required with DeliverMin');
-    }
-    if (!isAmount(this.DeliverMin))
-      throw new ValidationError('Payment: invalid DeliverMin');
   }
 }

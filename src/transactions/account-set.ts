@@ -1,79 +1,72 @@
 /**
- * AccountSet transaction — modify properties of an account.
+ * AccountSet transaction — modify account-specific settings or flags.
+ *
+ * @see https://xrpl.org/accountset.html
  */
 import type { BaseTransactionFields } from '../types/base.js';
 import type { AccountSetFlagsInterface } from '../types/flags.js';
-import { AccountSetAsfFlags } from '../types/flags.js';
 import { AccountTransaction } from '../groups/account.js';
 import { assignDefined } from '../transaction.js';
 import { ValidationError } from '../errors.js';
-import { isAccount, isString, isNumber } from '../validation/helpers.js';
-
-const MIN_TICK_SIZE = 3;
-const MAX_TICK_SIZE = 15;
+import { isNumber, isString } from '../validation/helpers.js';
 
 export interface AccountSetTxFields extends BaseTransactionFields {
   readonly TransactionType: 'AccountSet';
+  /** Hash of a certificate to use for some external validation. */
   readonly ClearFlag?: number;
+  /** Domain name associated with this account (hex encoded). */
   readonly Domain?: string;
+  /** Email hash (e.g. for Gravatar). */
   readonly EmailHash?: string;
+  /** Message key for encrypted messaging. */
   readonly MessageKey?: string;
-  readonly SetFlag?: AccountSetAsfFlags;
+  /** NFT collection fee (0-50,000). */
+  readonly NFTokenBrokerFee?: number;
+  /** Flag to enable on the account. */
+  readonly SetFlag?: number;
+  /** Transfer rate for issued currencies (drops per billion). */
   readonly TransferRate?: number;
+  /** Tick size for offer matching (3-15 or 0 to disable). */
   readonly TickSize?: number;
-  readonly NFTokenMinter?: string;
+  /** Bit-flags for this transaction. */
   readonly Flags?: number | AccountSetFlagsInterface;
 }
 
-const ACCTSET_OPTIONAL = [
-  'ClearFlag', 'Domain', 'EmailHash', 'MessageKey',
-  'SetFlag', 'TransferRate', 'TickSize', 'NFTokenMinter', 'Flags',
-] as const;
-
 export class AccountSetTx extends AccountTransaction {
   override readonly TransactionType = 'AccountSet' as const;
-  readonly ClearFlag?: number;
-  readonly Domain?: string;
-  readonly EmailHash?: string;
-  readonly MessageKey?: string;
-  readonly SetFlag?: AccountSetAsfFlags;
-  readonly TransferRate?: number;
-  readonly TickSize?: number;
-  readonly NFTokenMinter?: string;
+
+  readonly ClearFlag?: number = undefined;
+  readonly Domain?: string = undefined;
+  readonly EmailHash?: string = undefined;
+  readonly MessageKey?: string = undefined;
+  readonly NFTokenBrokerFee?: number = undefined;
+  readonly SetFlag?: number = undefined;
+  readonly TransferRate?: number = undefined;
+  readonly TickSize?: number = undefined;
   declare readonly Flags?: number | AccountSetFlagsInterface;
 
   constructor(props: AccountSetTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'AccountSet' } as BaseTransactionFields);
-    assignDefined(this, p, ACCTSET_OPTIONAL as unknown as string[]);
+    assignDefined(this, p, [
+      'ClearFlag', 'Domain', 'EmailHash', 'MessageKey',
+      'NFTokenBrokerFee', 'SetFlag', 'TransferRate', 'TickSize', 'Flags',
+    ]);
   }
 
   override validate(): void {
     super.validate();
-    if (this.NFTokenMinter !== undefined && !isAccount(this.NFTokenMinter))
-      throw new ValidationError('AccountSet: invalid NFTokenMinter');
-    if (this.ClearFlag !== undefined) {
-      if (!isNumber(this.ClearFlag)) throw new ValidationError('AccountSet: invalid ClearFlag');
-      if (!Object.values(AccountSetAsfFlags).includes(this.ClearFlag))
-        throw new ValidationError('AccountSet: invalid ClearFlag');
+    if (this.TransferRate !== undefined) {
+      if (!isNumber(this.TransferRate)) throw new ValidationError('AccountSet: TransferRate must be a number');
     }
-    if (this.Domain !== undefined && !isString(this.Domain))
-      throw new ValidationError('AccountSet: invalid Domain');
-    if (this.EmailHash !== undefined && !isString(this.EmailHash))
-      throw new ValidationError('AccountSet: invalid EmailHash');
-    if (this.MessageKey !== undefined && !isString(this.MessageKey))
-      throw new ValidationError('AccountSet: invalid MessageKey');
-    if (this.SetFlag !== undefined) {
-      if (!isNumber(this.SetFlag)) throw new ValidationError('AccountSet: invalid SetFlag');
-      if (!Object.values(AccountSetAsfFlags).includes(this.SetFlag))
-        throw new ValidationError('AccountSet: invalid SetFlag');
-    }
-    if (this.TransferRate !== undefined && !isNumber(this.TransferRate))
-      throw new ValidationError('AccountSet: invalid TransferRate');
     if (this.TickSize !== undefined) {
-      if (!isNumber(this.TickSize)) throw new ValidationError('AccountSet: invalid TickSize');
-      if (this.TickSize !== 0 && (this.TickSize < MIN_TICK_SIZE || this.TickSize > MAX_TICK_SIZE))
-        throw new ValidationError('AccountSet: invalid TickSize');
+      if (!isNumber(this.TickSize)) throw new ValidationError('AccountSet: TickSize must be a number');
+      if (this.TickSize !== 0 && (this.TickSize < 3 || this.TickSize > 15)) {
+        throw new ValidationError('AccountSet: TickSize must be 3-15 or 0');
+      }
+    }
+    if (this.Domain !== undefined && !isString(this.Domain)) {
+      throw new ValidationError('AccountSet: Domain must be a string');
     }
   }
 }

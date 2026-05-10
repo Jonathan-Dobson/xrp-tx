@@ -1,32 +1,44 @@
 /**
- * OfferCreate transaction — create a DEX limit order.
+ * OfferCreate transaction — place a limit order on the Decentralized Exchange (DEX).
+ *
+ * @see https://xrpl.org/offercreate.html
  */
-import type { Amount } from '../types/amounts.js';
 import type { BaseTransactionFields } from '../types/base.js';
+import type { Amount } from '../types/amounts.js';
 import type { OfferCreateFlagsInterface } from '../types/flags.js';
-import { OfferCreateFlags } from '../types/flags.js';
 import { OfferTransaction } from '../groups/offer.js';
 import { assignDefined } from '../transaction.js';
 import { ValidationError } from '../errors.js';
-import { isAmount, isNumber, isDomainID, isFlagEnabled } from '../validation/helpers.js';
+import { isAmount, isString } from '../validation/helpers.js';
 
 export interface OfferCreateTxFields extends BaseTransactionFields {
   readonly TransactionType: 'OfferCreate';
+  /** The amount to deliver to the order book. */
   readonly TakerGets: Amount;
+  /** The amount requested in exchange. */
   readonly TakerPays: Amount;
+  /** Time after which the offer is no longer valid. */
   readonly Expiration?: number;
+  /** Offer sequence to cancel when placing this one. */
   readonly OfferSequence?: number;
+  /** Identifier for a domain (required for tfHybrid). */
   readonly DomainID?: string;
+  /** Bit-flags for this transaction. */
   readonly Flags?: number | OfferCreateFlagsInterface;
 }
 
 export class OfferCreateTx extends OfferTransaction {
   override readonly TransactionType = 'OfferCreate' as const;
-  readonly TakerGets!: Amount;
-  readonly TakerPays!: Amount;
-  readonly Expiration?: number;
-  readonly OfferSequence?: number;
-  readonly DomainID?: string;
+
+  /** The amount to deliver to the order book. */
+  readonly TakerGets: Amount = undefined as any;
+
+  /** The amount requested in exchange. */
+  readonly TakerPays: Amount = undefined as any;
+
+  readonly Expiration?: number = undefined;
+  readonly OfferSequence?: number = undefined;
+  readonly DomainID?: string = undefined;
   declare readonly Flags?: number | OfferCreateFlagsInterface;
 
   constructor(props: OfferCreateTxFields | Record<string, unknown>) {
@@ -39,27 +51,17 @@ export class OfferCreateTx extends OfferTransaction {
 
   override validate(): void {
     super.validate();
-    if (this.TakerGets === undefined)
-      throw new ValidationError('OfferCreate: missing field TakerGets');
-    if (!isAmount(this.TakerGets))
-      throw new ValidationError('OfferCreate: invalid TakerGets');
-    if (this.TakerPays === undefined)
-      throw new ValidationError('OfferCreate: missing field TakerPays');
-    if (!isAmount(this.TakerPays))
-      throw new ValidationError('OfferCreate: invalid TakerPays');
-    if (this.Expiration !== undefined && !isNumber(this.Expiration))
-      throw new ValidationError('OfferCreate: invalid Expiration');
-    if (this.OfferSequence !== undefined && !isNumber(this.OfferSequence))
-      throw new ValidationError('OfferCreate: invalid OfferSequence');
-    if (this.DomainID !== undefined && !isDomainID(this.DomainID))
-      throw new ValidationError('OfferCreate: invalid DomainID');
-    if (this.DomainID == null && this.hasHybridFlag())
-      throw new ValidationError('OfferCreate: tfHybrid flag cannot be set if DomainID is not present');
-  }
-
-  private hasHybridFlag(): boolean {
-    if (this.Flags == null) return false;
-    if (typeof this.Flags === 'number') return isFlagEnabled(this.Flags, OfferCreateFlags.tfHybrid);
-    return this.Flags.tfHybrid ?? false;
+    if (!isAmount(this.TakerGets)) throw new ValidationError('OfferCreate: missing or invalid TakerGets');
+    if (!isAmount(this.TakerPays)) throw new ValidationError('OfferCreate: missing or invalid TakerPays');
+    
+    // Check tfHybrid validation
+    const flags = this.Flags as any;
+    const isHybrid = flags?.tfHybrid || flags === 0x00400000;
+    if (isHybrid && !this.DomainID) {
+      throw new ValidationError('OfferCreate: tfHybrid requires DomainID');
+    }
+    if (this.DomainID && !isString(this.DomainID)) {
+      throw new ValidationError('OfferCreate: DomainID must be a string');
+    }
   }
 }

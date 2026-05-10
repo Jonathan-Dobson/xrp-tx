@@ -1,5 +1,7 @@
 /**
- * CheckCancel transaction — cancel an unredeemed check.
+ * CheckCancel transaction — cancel an existing check.
+ *
+ * @see https://xrpl.org/checkcancel.html
  */
 import type { BaseTransactionFields } from '../types/base.js';
 import { Transaction } from '../transaction.js';
@@ -8,12 +10,15 @@ import { isString } from '../validation/helpers.js';
 
 export interface CheckCancelTxFields extends BaseTransactionFields {
   readonly TransactionType: 'CheckCancel';
+  /** The ID of the check to cancel. */
   readonly CheckID: string;
 }
 
 export class CheckCancelTx extends Transaction {
   override readonly TransactionType = 'CheckCancel' as const;
-  readonly CheckID: string;
+
+  /** The ID of the check to cancel. */
+  readonly CheckID: string = undefined as any;
 
   constructor(props: CheckCancelTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
@@ -23,6 +28,6 @@ export class CheckCancelTx extends Transaction {
 
   override validate(): void {
     super.validate();
-    if (!isString(this.CheckID)) throw new ValidationError('CheckCancel: missing CheckID');
+    if (!isString(this.CheckID)) throw new ValidationError('CheckCancel: missing or invalid CheckID');
   }
 }

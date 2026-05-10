@@ -1,5 +1,7 @@
 /**
- * SignerListSet transaction — create, replace, or remove a signer list.
+ * SignerListSet transaction — create, replace, or remove a multi-signature signer list.
+ *
+ * @see https://xrpl.org/signerlistset.html
  */
 import type { BaseTransactionFields } from '../types/base.js';
 import type { SignerEntry } from '../types/common.js';
@@ -10,7 +12,9 @@ import { isNumber, isRecord, isString, isArray } from '../validation/helpers.js'
 
 export interface SignerListSetTxFields extends BaseTransactionFields {
   readonly TransactionType: 'SignerListSet';
+  /** The target number of weights required to authorize a transaction (0 to delete). */
   readonly SignerQuorum: number;
+  /** Up to 32 signer entries. */
   readonly SignerEntries?: SignerEntry[];
 }
 
@@ -23,8 +27,12 @@ function isSignerEntry(value: unknown): value is SignerEntry {
 
 export class SignerListSetTx extends AccountTransaction {
   override readonly TransactionType = 'SignerListSet' as const;
-  readonly SignerQuorum!: number;
-  readonly SignerEntries?: SignerEntry[];
+
+  /** The target number of weights required. */
+  readonly SignerQuorum: number = undefined as any;
+
+  /** Up to 32 signer entries. */
+  readonly SignerEntries?: SignerEntry[] = undefined;
 
   constructor(props: SignerListSetTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;

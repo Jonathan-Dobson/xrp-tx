@@ -1,5 +1,7 @@
 /**
- * NFTokenMint transaction — mint a new NFToken.
+ * NFTokenMint transaction — create a new NFToken (NFT) on the ledger.
+ *
+ * @see https://xrpl.org/nftokenmint.html
  */
 import type { BaseTransactionFields } from '../types/base.js';
 import type { NFTokenMintFlagsInterface } from '../types/flags.js';
@@ -10,19 +12,27 @@ import { isNumber, isString, isAccount } from '../validation/helpers.js';
 
 export interface NFTokenMintTxFields extends BaseTransactionFields {
   readonly TransactionType: 'NFTokenMint';
+  /** The taxon associated with this NFToken. */
   readonly NFTokenTaxon: number;
+  /** The address of the entity that created the token (if not the sender). */
   readonly Issuer?: string;
+  /** The fee (in basis points) charged on secondary sales (0-50,000). */
   readonly TransferFee?: number;
+  /** Arbitrary data for the token (e.g. IPFS link). */
   readonly URI?: string;
+  /** Bit-flags for this transaction. */
   readonly Flags?: number | NFTokenMintFlagsInterface;
 }
 
 export class NFTokenMintTx extends TokenTransaction {
   override readonly TransactionType = 'NFTokenMint' as const;
-  readonly NFTokenTaxon!: number;
-  readonly Issuer?: string;
-  readonly TransferFee?: number;
-  readonly URI?: string;
+
+  /** The taxon associated with this NFToken. */
+  readonly NFTokenTaxon: number = undefined as any;
+
+  readonly Issuer?: string = undefined;
+  readonly TransferFee?: number = undefined;
+  readonly URI?: string = undefined;
   declare readonly Flags?: number | NFTokenMintFlagsInterface;
 
   constructor(props: NFTokenMintTxFields | Record<string, unknown>) {

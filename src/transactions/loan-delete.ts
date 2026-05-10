@@ -1,28 +1,30 @@
 /**
- * LoanDelete transaction — delete a loan specification.
+ * LoanDelete transaction — delete a loan definition from the ledger.
  */
 import type { BaseTransactionFields } from '../types/base.js';
-import { LoanTransaction } from '../groups/loan.js';
+import { Transaction } from '../transaction.js';
 import { ValidationError } from '../errors.js';
+import { isString } from '../validation/helpers.js';
 
 export interface LoanDeleteTxFields extends BaseTransactionFields {
   readonly TransactionType: 'LoanDelete';
-  readonly LoanID: string;
+  /** The asset associated with the loan. */
+  readonly Asset: string;
 }
 
-export class LoanDeleteTx extends LoanTransaction {
+export class LoanDeleteTx extends Transaction {
   override readonly TransactionType = 'LoanDelete' as const;
-  readonly LoanID!: string;
+
+  readonly Asset: string = undefined as any;
 
   constructor(props: LoanDeleteTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'LoanDelete' } as BaseTransactionFields);
-    this.LoanID = p['LoanID'] as string;
+    this.Asset = p['Asset'] as string;
   }
 
   override validate(): void {
     super.validate();
-    if (typeof this.LoanID !== 'string')
-      throw new ValidationError('LoanDelete: LoanID must be a string');
+    if (!isString(this.Asset)) throw new ValidationError('LoanDelete: missing or invalid Asset');
   }
 }

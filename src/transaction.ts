@@ -149,12 +149,30 @@ export abstract class Transaction {
    */
   toJSON(): Record<string, unknown> {
     const json: Record<string, unknown> = {};
-    for (const key of Object.keys(this)) {
+    
+    // 1. Start with the properties found via Object.keys (enumerable own properties)
+    const keys = new Set(Object.keys(this));
+    
+    // 2. Add properties found via Object.getOwnPropertyNames (all own properties)
+    Object.getOwnPropertyNames(this).forEach(k => keys.add(k));
+
+    for (const key of keys) {
+      // Skip internal properties starting with _
+      if (key.startsWith('_')) continue;
+      
       const value = (this as Record<string, unknown>)[key];
-      if (value !== undefined) {
+      if (value !== undefined && typeof value !== 'function') {
         json[key] = value;
       }
     }
+    
+    // 3. Guarantee core fields from the base class
+    if (this.Account) json.Account = this.Account;
+    if (this.TransactionType) json.TransactionType = this.TransactionType;
+    if (this.Fee) json.Fee = this.Fee;
+    if (this.Sequence !== undefined) json.Sequence = this.Sequence;
+    if (this.Flags !== undefined) json.Flags = this.Flags;
+
     return json;
   }
 

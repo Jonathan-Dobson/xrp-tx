@@ -18,8 +18,12 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "node --experimental-vm-modules node_modules/.bin/vitest run",
+    "test": "node --experimental-vm-modules node_modules/.bin/vitest run tests/transaction.test.ts",
     "test:watch": "node --experimental-vm-modules node_modules/.bin/vitest",
+    "test:integration:offline": "node --experimental-vm-modules node_modules/.bin/vitest run tests/integration.offline.test.ts",
+    "test:integration:testnet": "node --experimental-vm-modules node_modules/.bin/vitest run tests/integration.testnet.test.ts --testTimeout=30000",
+    "test:docs": "node --experimental-vm-modules node_modules/.bin/vitest run tests/docs.test.ts",
+    "test:all": "npm run test && npm run test:integration:offline && npm run test:integration:testnet",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build"
   },
@@ -36,8 +40,10 @@
   "author": "Jonathan Dobson",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^25.6.2",
     "typescript": "^6.0.3",
-    "vitest": "^3.2.1"
+    "vitest": "^3.2.1",
+    "xrpl": "^4.6.0"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -50,5 +56,4 @@
     "url": "https://github.com/Jonathan-Dobson/xrp-tx/issues"
   },
   "homepage": "https://github.com/Jonathan-Dobson/xrp-tx#readme"
-
 }

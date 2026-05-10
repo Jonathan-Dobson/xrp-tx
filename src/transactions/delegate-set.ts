@@ -1,34 +1,31 @@
 /**
- * DelegateSet transaction — assign delegate permissions.
+ * DelegateSet transaction — authorize another account to perform certain actions on your behalf.
  */
 import type { BaseTransactionFields } from '../types/base.js';
-import { AccountTransaction } from '../groups/account.js';
-import { assignDefined } from '../transaction.js';
+import { Transaction } from '../transaction.js';
 import { ValidationError } from '../errors.js';
 import { isAccount } from '../validation/helpers.js';
 
 export interface DelegateSetTxFields extends BaseTransactionFields {
   readonly TransactionType: 'DelegateSet';
-  readonly Authorize?: string;
-  readonly Unauthorize?: string;
+  /** The account to authorize as a delegate. */
+  readonly Delegate: string;
 }
 
-export class DelegateSetTx extends AccountTransaction {
+export class DelegateSetTx extends Transaction {
   override readonly TransactionType = 'DelegateSet' as const;
-  readonly Authorize?: string;
-  readonly Unauthorize?: string;
+
+  /** The account to authorize. */
+  override readonly Delegate: string = undefined as any;
 
   constructor(props: DelegateSetTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'DelegateSet' } as BaseTransactionFields);
-    assignDefined(this, p, ['Authorize', 'Unauthorize']);
+    this.Delegate = p['Delegate'] as string;
   }
 
   override validate(): void {
     super.validate();
-    if (this.Authorize !== undefined && !isAccount(this.Authorize))
-      throw new ValidationError('DelegateSet: invalid Authorize');
-    if (this.Unauthorize !== undefined && !isAccount(this.Unauthorize))
-      throw new ValidationError('DelegateSet: invalid Unauthorize');
+    if (!isAccount(this.Delegate)) throw new ValidationError('DelegateSet: missing or invalid Delegate');
   }
 }

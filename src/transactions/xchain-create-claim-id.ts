@@ -1,40 +1,44 @@
 /**
- * XChainCreateClaimID transaction — create a claim ID for cross-chain transfers.
+ * XChainCreateClaimID transaction — create a new claim ID on the destination chain.
  */
 import type { BaseTransactionFields } from '../types/base.js';
-import type { XChainBridge } from '../types/common.js';
 import { XChainTransaction } from '../groups/xchain.js';
 import { ValidationError } from '../errors.js';
-import { isXChainBridge, isAccount } from '../validation/helpers.js';
+import { isAmount, isRecord } from '../validation/helpers.js';
 
 export interface XChainCreateClaimIDTxFields extends BaseTransactionFields {
   readonly TransactionType: 'XChainCreateClaimID';
-  readonly XChainBridge: XChainBridge;
+  /** Definition of the bridge to use. */
+  readonly XChainBridge: Record<string, unknown>;
+  /** The signature reward for creating the claim ID. */
   readonly SignatureReward: string;
+  /** The destination account for the future claim. */
   readonly OtherChainSource: string;
 }
 
 export class XChainCreateClaimIDTx extends XChainTransaction {
   override readonly TransactionType = 'XChainCreateClaimID' as const;
-  readonly XChainBridge!: XChainBridge;
-  readonly SignatureReward!: string;
-  readonly OtherChainSource!: string;
+
+  /** Definition of the bridge to use. */
+  readonly XChainBridge: Record<string, unknown> = undefined as any;
+
+  /** The signature reward for creating the claim ID. */
+  readonly SignatureReward: string = undefined as any;
+
+  /** The destination account for the future claim. */
+  readonly OtherChainSource: string = undefined as any;
 
   constructor(props: XChainCreateClaimIDTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'XChainCreateClaimID' } as BaseTransactionFields);
-    this.XChainBridge = p['XChainBridge'] as XChainBridge;
+    this.XChainBridge = p['XChainBridge'] as Record<string, unknown>;
     this.SignatureReward = p['SignatureReward'] as string;
     this.OtherChainSource = p['OtherChainSource'] as string;
   }
 
   override validate(): void {
     super.validate();
-    if (!isXChainBridge(this.XChainBridge))
-      throw new ValidationError('XChainCreateClaimID: invalid XChainBridge');
-    if (typeof this.SignatureReward !== 'string')
-      throw new ValidationError('XChainCreateClaimID: SignatureReward must be a string');
-    if (!isAccount(this.OtherChainSource))
-      throw new ValidationError('XChainCreateClaimID: invalid OtherChainSource');
+    if (!isRecord(this.XChainBridge)) throw new ValidationError('XChainCreateClaimID: missing or invalid XChainBridge');
+    if (!isAmount(this.SignatureReward)) throw new ValidationError('XChainCreateClaimID: missing or invalid SignatureReward');
   }
 }

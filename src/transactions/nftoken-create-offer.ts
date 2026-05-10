@@ -1,5 +1,7 @@
 /**
  * NFTokenCreateOffer transaction — create an offer to buy or sell an NFToken.
+ *
+ * @see https://xrpl.org/nftokencreateoffer.html
  */
 import type { Amount } from '../types/amounts.js';
 import type { BaseTransactionFields } from '../types/base.js';
@@ -11,21 +13,32 @@ import { isString, isAmount, isAccount, isNumber } from '../validation/helpers.j
 
 export interface NFTokenCreateOfferTxFields extends BaseTransactionFields {
   readonly TransactionType: 'NFTokenCreateOffer';
+  /** The unique identifier of the NFToken. */
   readonly NFTokenID: string;
+  /** The price for the token. */
   readonly Amount: Amount;
+  /** The account that currently owns the token (required for Buy offers). */
   readonly Owner?: string;
+  /** Time after which the offer is no longer valid. */
   readonly Expiration?: number;
+  /** The specific account allowed to accept this offer. */
   readonly Destination?: string;
+  /** Bit-flags for this transaction (e.g. tfSellNFToken). */
   readonly Flags?: number | NFTokenCreateOfferFlagsInterface;
 }
 
 export class NFTokenCreateOfferTx extends TokenTransaction {
   override readonly TransactionType = 'NFTokenCreateOffer' as const;
-  readonly NFTokenID!: string;
-  readonly Amount!: Amount;
-  readonly Owner?: string;
-  readonly Expiration?: number;
-  readonly Destination?: string;
+
+  /** The unique identifier of the NFToken. */
+  readonly NFTokenID: string = undefined as any;
+
+  /** The price for the token. */
+  readonly Amount: Amount = undefined as any;
+
+  readonly Owner?: string = undefined;
+  readonly Expiration?: number = undefined;
+  readonly Destination?: string = undefined;
   declare readonly Flags?: number | NFTokenCreateOfferFlagsInterface;
 
   constructor(props: NFTokenCreateOfferTxFields | Record<string, unknown>) {

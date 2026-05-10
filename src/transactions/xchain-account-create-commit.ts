@@ -1,45 +1,50 @@
 /**
- * XChainAccountCreateCommit transaction — commit funds to create an account on another chain.
+ * XChainAccountCreateCommit transaction — commit funds to create a new account on a destination chain.
  */
 import type { BaseTransactionFields } from '../types/base.js';
-import type { XChainBridge } from '../types/common.js';
 import { XChainTransaction } from '../groups/xchain.js';
 import { ValidationError } from '../errors.js';
-import { isXChainBridge, isAccount } from '../validation/helpers.js';
+import { isAmount, isRecord } from '../validation/helpers.js';
 
 export interface XChainAccountCreateCommitTxFields extends BaseTransactionFields {
   readonly TransactionType: 'XChainAccountCreateCommit';
-  readonly XChainBridge: XChainBridge;
-  readonly SignatureReward: string;
+  /** Definition of the bridge to use. */
+  readonly XChainBridge: Record<string, unknown>;
+  /** The address of the account to create on the destination chain. */
   readonly Destination: string;
+  /** The amount to commit for account creation. */
   readonly Amount: string;
+  /** The signature reward for the account creation. */
+  readonly SignatureReward: string;
 }
 
 export class XChainAccountCreateCommitTx extends XChainTransaction {
   override readonly TransactionType = 'XChainAccountCreateCommit' as const;
-  readonly XChainBridge!: XChainBridge;
-  readonly SignatureReward!: string;
-  readonly Destination!: string;
-  readonly Amount!: string;
+
+  /** Definition of the bridge to use. */
+  readonly XChainBridge: Record<string, unknown> = undefined as any;
+
+  /** The address of the account to create on the destination chain. */
+  readonly Destination: string = undefined as any;
+
+  /** The amount to commit for account creation. */
+  readonly Amount: string = undefined as any;
+
+  /** The signature reward for the account creation. */
+  readonly SignatureReward: string = undefined as any;
 
   constructor(props: XChainAccountCreateCommitTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'XChainAccountCreateCommit' } as BaseTransactionFields);
-    this.XChainBridge = p['XChainBridge'] as XChainBridge;
-    this.SignatureReward = p['SignatureReward'] as string;
+    this.XChainBridge = p['XChainBridge'] as Record<string, unknown>;
     this.Destination = p['Destination'] as string;
     this.Amount = p['Amount'] as string;
+    this.SignatureReward = p['SignatureReward'] as string;
   }
 
   override validate(): void {
     super.validate();
-    if (!isXChainBridge(this.XChainBridge))
-      throw new ValidationError('XChainAccountCreateCommit: invalid XChainBridge');
-    if (typeof this.SignatureReward !== 'string')
-      throw new ValidationError('XChainAccountCreateCommit: SignatureReward must be a string');
-    if (!isAccount(this.Destination))
-      throw new ValidationError('XChainAccountCreateCommit: invalid Destination');
-    if (typeof this.Amount !== 'string')
-      throw new ValidationError('XChainAccountCreateCommit: Amount must be a string');
+    if (!isRecord(this.XChainBridge)) throw new ValidationError('XChainAccountCreateCommit: missing or invalid XChainBridge');
+    if (!isAmount(this.Amount)) throw new ValidationError('XChainAccountCreateCommit: missing or invalid Amount');
   }
 }

@@ -1,5 +1,7 @@
 /**
- * MPTokenAuthorize — authorize or deauthorize an MPT holder.
+ * MPTokenAuthorize transaction — authorize or deauthorize an account to hold an MPT.
+ *
+ * @see https://xrpl.org/mptokenauthorize.html
  */
 import type { BaseTransactionFields } from '../types/base.js';
 import type { MPTokenAuthorizeFlagsInterface } from '../types/flags.js';
@@ -10,15 +12,22 @@ import { isString, isAccount } from '../validation/helpers.js';
 
 export interface MPTokenAuthorizeTxFields extends BaseTransactionFields {
   readonly TransactionType: 'MPTokenAuthorize';
+  /** The unique identifier of the MPT issuance. */
   readonly MPTokenIssuanceID: string;
+  /** The account of the holder to authorize. */
   readonly Holder?: string;
+  /** Bit-flags for this transaction. */
   readonly Flags?: number | MPTokenAuthorizeFlagsInterface;
 }
 
 export class MPTokenAuthorizeTx extends TokenTransaction {
   override readonly TransactionType = 'MPTokenAuthorize' as const;
-  readonly MPTokenIssuanceID!: string;
-  readonly Holder?: string;
+
+  /** The unique identifier of the MPT issuance. */
+  readonly MPTokenIssuanceID: string = undefined as any;
+
+  /** The account of the holder to authorize. */
+  readonly Holder?: string = undefined;
   declare readonly Flags?: number | MPTokenAuthorizeFlagsInterface;
 
   constructor(props: MPTokenAuthorizeTxFields | Record<string, unknown>) {

@@ -1,24 +1,35 @@
 /**
- * AMMCreate transaction — create a new Automated Market Maker.
+ * AMMCreate transaction — create a new Automated Market Maker (AMM) instance for a currency pair.
+ *
+ * @see https://xrpl.org/ammcreate.html
  */
-import type { BaseTransactionFields } from '../types/base.js';
 import type { Amount } from '../types/amounts.js';
+import type { BaseTransactionFields } from '../types/base.js';
 import { AMMTransaction } from '../groups/amm.js';
 import { ValidationError } from '../errors.js';
 import { isAmount, isNumber } from '../validation/helpers.js';
 
 export interface AMMCreateTxFields extends BaseTransactionFields {
   readonly TransactionType: 'AMMCreate';
+  /** The first amount of the asset pair. */
   readonly Amount: Amount;
+  /** The second amount of the asset pair. */
   readonly Amount2: Amount;
+  /** The trading fee for this AMM (0-1000, representing 0% to 1%). */
   readonly TradingFee: number;
 }
 
 export class AMMCreateTx extends AMMTransaction {
   override readonly TransactionType = 'AMMCreate' as const;
-  readonly Amount!: Amount;
-  readonly Amount2!: Amount;
-  readonly TradingFee!: number;
+
+  /** The first amount of the asset pair. */
+  readonly Amount: Amount = undefined as any;
+
+  /** The second amount of the asset pair. */
+  readonly Amount2: Amount = undefined as any;
+
+  /** The trading fee for this AMM (0-1000). */
+  readonly TradingFee: number = undefined as any;
 
   constructor(props: AMMCreateTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
@@ -30,10 +41,10 @@ export class AMMCreateTx extends AMMTransaction {
 
   override validate(): void {
     super.validate();
-    if (!isAmount(this.Amount)) throw new ValidationError('AMMCreate: invalid Amount');
-    if (!isAmount(this.Amount2)) throw new ValidationError('AMMCreate: invalid Amount2');
-    if (!isNumber(this.TradingFee)) throw new ValidationError('AMMCreate: missing TradingFee');
-    if (this.TradingFee < 0 || this.TradingFee > 1000)
-      throw new ValidationError('AMMCreate: TradingFee must be between 0 and 1000');
+    if (!isAmount(this.Amount)) throw new ValidationError('AMMCreate: missing or invalid Amount');
+    if (!isAmount(this.Amount2)) throw new ValidationError('AMMCreate: missing or invalid Amount2');
+    if (!isNumber(this.TradingFee) || this.TradingFee < 0 || this.TradingFee > 1000) {
+      throw new ValidationError('AMMCreate: TradingFee must be 0-1000');
+    }
   }
 }

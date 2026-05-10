@@ -1,5 +1,7 @@
 /**
  * NFTokenAcceptOffer transaction — accept an offer to buy or sell an NFToken.
+ *
+ * @see https://xrpl.org/nftokenacceptoffer.html
  */
 import type { Amount } from '../types/amounts.js';
 import type { BaseTransactionFields } from '../types/base.js';
@@ -10,16 +12,20 @@ import { isString, isAmount } from '../validation/helpers.js';
 
 export interface NFTokenAcceptOfferTxFields extends BaseTransactionFields {
   readonly TransactionType: 'NFTokenAcceptOffer';
+  /** The unique identifier of the Sell offer to accept. */
   readonly NFTokenSellOffer?: string;
+  /** The unique identifier of the Buy offer to accept. */
   readonly NFTokenBuyOffer?: string;
+  /** Fee paid to a broker for facilitating the trade. */
   readonly NFTokenBrokerFee?: Amount;
 }
 
 export class NFTokenAcceptOfferTx extends TokenTransaction {
   override readonly TransactionType = 'NFTokenAcceptOffer' as const;
-  readonly NFTokenSellOffer?: string;
-  readonly NFTokenBuyOffer?: string;
-  readonly NFTokenBrokerFee?: Amount;
+
+  readonly NFTokenSellOffer?: string = undefined;
+  readonly NFTokenBuyOffer?: string = undefined;
+  readonly NFTokenBrokerFee?: Amount = undefined;
 
   constructor(props: NFTokenAcceptOfferTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;

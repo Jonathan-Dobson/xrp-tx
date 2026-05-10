@@ -1,39 +1,40 @@
 /**
- * XChainModifyBridge transaction — modify properties of a cross-chain bridge.
+ * XChainModifyBridge transaction — update the parameters of an existing cross-chain bridge.
  */
 import type { BaseTransactionFields } from '../types/base.js';
-import type { XChainBridge } from '../types/common.js';
-import type { XChainModifyBridgeFlagsInterface } from '../types/flags.js';
 import { XChainTransaction } from '../groups/xchain.js';
-import { assignDefined } from '../transaction.js';
 import { ValidationError } from '../errors.js';
-import { isXChainBridge } from '../validation/helpers.js';
+import { isRecord } from '../validation/helpers.js';
 
 export interface XChainModifyBridgeTxFields extends BaseTransactionFields {
   readonly TransactionType: 'XChainModifyBridge';
-  readonly XChainBridge: XChainBridge;
-  readonly SignatureReward?: string;
+  /** Definition of the bridge to modify. */
+  readonly XChainBridge: Record<string, unknown>;
+  /** New minimum account creation amount. */
   readonly MinAccountCreateAmount?: string;
-  readonly Flags?: number | XChainModifyBridgeFlagsInterface;
+  /** New signature reward. */
+  readonly SignatureReward?: string;
 }
 
 export class XChainModifyBridgeTx extends XChainTransaction {
   override readonly TransactionType = 'XChainModifyBridge' as const;
-  readonly XChainBridge!: XChainBridge;
-  readonly SignatureReward?: string;
-  readonly MinAccountCreateAmount?: string;
-  declare readonly Flags?: number | XChainModifyBridgeFlagsInterface;
+
+  /** Definition of the bridge to modify. */
+  readonly XChainBridge: Record<string, unknown> = undefined as any;
+
+  readonly MinAccountCreateAmount?: string = undefined;
+  readonly SignatureReward?: string = undefined;
 
   constructor(props: XChainModifyBridgeTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'XChainModifyBridge' } as BaseTransactionFields);
-    this.XChainBridge = p['XChainBridge'] as XChainBridge;
-    assignDefined(this, p, ['SignatureReward', 'MinAccountCreateAmount', 'Flags']);
+    this.XChainBridge = p['XChainBridge'] as Record<string, unknown>;
+    this.MinAccountCreateAmount = p['MinAccountCreateAmount'] as string;
+    this.SignatureReward = p['SignatureReward'] as string;
   }
 
   override validate(): void {
     super.validate();
-    if (!isXChainBridge(this.XChainBridge))
-      throw new ValidationError('XChainModifyBridge: invalid XChainBridge');
+    if (!isRecord(this.XChainBridge)) throw new ValidationError('XChainModifyBridge: missing or invalid XChainBridge');
   }
 }

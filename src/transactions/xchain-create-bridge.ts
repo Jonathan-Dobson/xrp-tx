@@ -1,39 +1,45 @@
 /**
- * XChainCreateBridge transaction — create a new cross-chain bridge.
+ * XChainCreateBridge transaction — define a new cross-chain bridge on the ledger.
+ *
+ * @see https://xrpl.org/xchaincreatebridge.html
  */
 import type { BaseTransactionFields } from '../types/base.js';
-import type { XChainBridge } from '../types/common.js';
 import { XChainTransaction } from '../groups/xchain.js';
-import { assignDefined } from '../transaction.js';
 import { ValidationError } from '../errors.js';
-import { isXChainBridge } from '../validation/helpers.js';
+import { isAmount, isRecord } from '../validation/helpers.js';
 
 export interface XChainCreateBridgeTxFields extends BaseTransactionFields {
   readonly TransactionType: 'XChainCreateBridge';
-  readonly XChainBridge: XChainBridge;
-  readonly SignatureReward: string;
+  /** Definition of the bridge (locking/issuing chains and assets). */
+  readonly XChainBridge: Record<string, unknown>;
+  /** Minimum amount required to create an account on the destination chain. */
   readonly MinAccountCreateAmount?: string;
+  /** Signature reward for witness servers. */
+  readonly SignatureReward: string;
 }
 
 export class XChainCreateBridgeTx extends XChainTransaction {
   override readonly TransactionType = 'XChainCreateBridge' as const;
-  readonly XChainBridge!: XChainBridge;
-  readonly SignatureReward!: string;
-  readonly MinAccountCreateAmount?: string;
+
+  /** Definition of the bridge. */
+  readonly XChainBridge: Record<string, unknown> = undefined as any;
+
+  readonly MinAccountCreateAmount?: string = undefined;
+
+  /** Signature reward for witness servers. */
+  readonly SignatureReward: string = undefined as any;
 
   constructor(props: XChainCreateBridgeTxFields | Record<string, unknown>) {
     const p = props as Record<string, unknown>;
     super({ ...p, TransactionType: 'XChainCreateBridge' } as BaseTransactionFields);
-    this.XChainBridge = p['XChainBridge'] as XChainBridge;
+    this.XChainBridge = p['XChainBridge'] as Record<string, unknown>;
     this.SignatureReward = p['SignatureReward'] as string;
-    assignDefined(this, p, ['MinAccountCreateAmount']);
+    this.MinAccountCreateAmount = p['MinAccountCreateAmount'] as string;
   }
 
   override validate(): void {
     super.validate();
-    if (!isXChainBridge(this.XChainBridge))
-      throw new ValidationError('XChainCreateBridge: invalid XChainBridge');
-    if (typeof this.SignatureReward !== 'string')
-      throw new ValidationError('XChainCreateBridge: SignatureReward must be a string');
+    if (!isRecord(this.XChainBridge)) throw new ValidationError('XChainCreateBridge: missing or invalid XChainBridge');
+    if (!isAmount(this.SignatureReward)) throw new ValidationError('XChainCreateBridge: missing or invalid SignatureReward');
   }
 }
