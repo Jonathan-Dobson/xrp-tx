@@ -1,10 +1,10 @@
-# xrp-tx
+# xrpt
 
 A standalone, zero-dependency, class-based transaction builder for the XRP Ledger.
 
-`xrp-tx` is designed to provide a premium developer experience for constructing, validating, and manipulating XRPL transactions. It replaces the legacy union-of-interfaces pattern with a robust class hierarchy, enabling inherited properties, logical grouping, and strict runtime validation.
+`xrpt` is designed to provide a premium developer experience for constructing, validating, and manipulating XRPL transactions. It replaces the legacy union-of-interfaces pattern with a robust class hierarchy, enabling inherited properties, logical grouping, and strict runtime validation.
 
-[![NPM Version](https://img.shields.io/npm/v/xrp-tx.svg)](https://www.npmjs.com/package/xrp-tx)
+[![NPM Version](https://img.shields.io/npm/v/xrpt.svg)](https://www.npmjs.com/package/xrpt)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Documentation
@@ -25,7 +25,7 @@ For a comprehensive guide to all 70+ transaction types and advanced usage patter
 ## Installation
 
 ```bash
-npm install xrp-tx
+npm install xrpt
 ```
 
 ## Quick Start
@@ -33,7 +33,7 @@ npm install xrp-tx
 ### Creating a Transaction
 
 ```typescript
-import { Transaction, PaymentTx } from 'xrp-tx';
+import { Transaction, PaymentTx } from 'xrpt';
 
 // Option 1: Using the convenience factory
 const tx = Transaction.payment({
@@ -78,7 +78,7 @@ console.log(tx1.Fee); // undefined (tx1 remains unchanged)
 
 ## Supported Transaction Types (71)
 
-`xrp-tx` provides 100% coverage for standard and experimental XRPL transaction types, including:
+`xrpt` provides 100% coverage for standard and experimental XRPL transaction types, including:
 
 - **Core:** `Payment`, `AccountSet`, `TrustSet`, `OfferCreate`, `OfferCancel`, `Check*`, `Escrow*`, `SignerListSet`, etc.
 - **NFTs:** `NFTokenMint`, `NFTokenBurn`, `NFTokenCreateOffer`, `NFTokenAcceptOffer`, etc.
@@ -87,9 +87,9 @@ console.log(tx1.Fee); // undefined (tx1 remains unchanged)
 - **Sidechains:** `XChainCreateBridge`, `XChainCommit`, `XChainClaim`, etc.
 - **Niche:** `Vault*`, `Loan*`, `Oracle*`, `Credential*`, `DID*`, `Batch`, etc.
 
-## Why use xrp-tx?
+## Why use xrpt?
 
-Modern XRPL development often requires high-fidelity transaction construction without the overhead of a full ledger library. `xrp-tx` is ideal for:
+Modern XRPL development often requires high-fidelity transaction construction without the overhead of a full ledger library. `xrpt` is ideal for:
 
 1. **Lightweight Clients:** Perfect for mobile apps or edge functions where bundle size matters.
 2. **Transaction Builders:** Provides a clean UI-to-JSON mapping with instant validation.

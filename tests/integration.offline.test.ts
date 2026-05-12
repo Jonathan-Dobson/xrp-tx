@@ -3,7 +3,7 @@ import { Wallet, decode, encode } from "xrpl";
 import { Transaction, TransactionRegistry } from "../src/index.js";
 import { TransactionFixtures } from "./fixtures.js";
 
-describe("Offline Integration: xrp-tx + xrpl", () => {
+describe("Offline Integration: xrpt + xrpl", () => {
   const wallet = Wallet.generate();
 
   describe("Registry Sweep: All Transaction Types", () => {

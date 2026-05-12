@@ -50,10 +50,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jonathan-Dobson/xrp-tx.git"
+    "url": "git+https://github.com/Jonathan-Dobson/xrpt.git"
   },
   "bugs": {
-    "url": "https://github.com/Jonathan-Dobson/xrp-tx/issues"
+    "url": "https://github.com/Jonathan-Dobson/xrpt/issues"
   },
-  "homepage": "https://github.com/Jonathan-Dobson/xrp-tx#readme"
+  "homepage": "https://github.com/Jonathan-Dobson/xrpt#readme"
 }
