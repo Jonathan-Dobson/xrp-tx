@@ -1,5 +1,5 @@
 /**
- * xrpt — Standalone XRPL Transaction Builder
+ * xrplt — Standalone XRPL Transaction Builder
  *
  * A zero-dependency package for creating, validating, and manipulating
  * XRP Ledger transactions with a clean class-based API.

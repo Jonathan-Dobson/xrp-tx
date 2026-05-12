@@ -1,14 +1,14 @@
 /**
- * xrpt Integration Test Suite
+ * xrplt Integration Test Suite
  *
  * Connects to the XRPL Testnet, funds two wallets via the faucet,
- * builds transactions with xrpt, autofills + signs with xrpl.js,
+ * builds transactions with xrplt, autofills + signs with xrpl.js,
  * submits them, and asserts tesSUCCESS for every case.
  *
  * Run: node integration.mjs
  */
 
-import { Client, Wallet, dropsToXrp, xrpToDrops } from 'xrpl';
+import { Client, Wallet, dropsToXrp, xrpltoDrops } from 'xrpl';
 import {
     Transaction,
     PaymentTx,
@@ -27,7 +27,7 @@ import {
     OfferCreateTx,
     OfferCancelTx,
     AccountSetAsfFlags,
-} from 'xrpt';
+} from 'xrplt';
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 const TESTNET_WSS = 'wss://s.altnet.rippletest.net:51233';
@@ -63,11 +63,11 @@ function skip(name, reason) {
 }
 
 /**
- * Autofill a transaction built by xrpt, sign it, and submit.
+ * Autofill a transaction built by xrplt, sign it, and submit.
  * Returns the full response from submitAndWait().
  */
 async function submitTx(client, txObj, wallet) {
-    // xrpt toJSON() gives us a plain object compatible with xrpl.js
+    // xrplt toJSON() gives us a plain object compatible with xrpl.js
     const prepared = await client.autofill(txObj.toJSON());
     const { tx_blob } = wallet.sign(prepared);
     return client.submitAndWait(tx_blob);
@@ -104,7 +104,7 @@ await runTest('send 10 XRP from Alice to Bob', async () => {
     const tx = new PaymentTx({
         Account: alice.classicAddress,
         Destination: bob.classicAddress,
-        Amount: xrpToDrops('10'),
+        Amount: xrpltoDrops('10'),
     });
     tx.validate();
     const res = await submitTx(client, tx, alice);
@@ -115,11 +115,11 @@ await runTest('send 1 XRP with DestinationTag and Memo', async () => {
     const tx = new PaymentTx({
         Account: alice.classicAddress,
         Destination: bob.classicAddress,
-        Amount: xrpToDrops('1'),
+        Amount: xrpltoDrops('1'),
         DestinationTag: 12345,
         Memos: [{
             Memo: {
-                MemoData: Buffer.from('xrpt integration test').toString('hex').toUpperCase(),
+                MemoData: Buffer.from('xrplt integration test').toString('hex').toUpperCase(),
                 MemoType: Buffer.from('text/plain').toString('hex').toUpperCase(),
             },
         }],
@@ -134,7 +134,7 @@ await runTest('payment with explicit Fee and LastLedgerSequence via .with()', as
     const base = new PaymentTx({
         Account: alice.classicAddress,
         Destination: bob.classicAddress,
-        Amount: xrpToDrops('1'),
+        Amount: xrpltoDrops('1'),
     });
     const ledger = await client.request({ command: 'ledger_current' });
     const tx = base.with({
@@ -274,7 +274,7 @@ await runTest('create a DEX offer (XRP for USD)', async () => {
     const tx = new OfferCreateTx({
         Account: alice.classicAddress,
         TakerPays: { currency: 'USD', issuer: bob.classicAddress, value: '10' },
-        TakerGets: xrpToDrops('50'),
+        TakerGets: xrpltoDrops('50'),
     });
     tx.validate();
     const res = await submitTx(client, tx, alice);
@@ -306,7 +306,7 @@ await runTest('create an escrow with FinishAfter +8s', async () => {
     const tx = new EscrowCreateTx({
         Account: alice.classicAddress,
         Destination: bob.classicAddress,
-        Amount: xrpToDrops('3'),
+        Amount: xrpltoDrops('3'),
         FinishAfter: xrplNow() + 8,
         CancelAfter: xrplNow() + 3600,
     });
@@ -341,7 +341,7 @@ await runTest('create an escrow with FinishAfter +5s, CancelAfter +10s', async (
     const tx = new EscrowCreateTx({
         Account: alice.classicAddress,
         Destination: bob.classicAddress,
-        Amount: xrpToDrops('2'),
+        Amount: xrpltoDrops('2'),
         FinishAfter: now + 5,   // can finish after 5 s
         CancelAfter: now + 10,  // can cancel after 10 s (must be > FinishAfter)
     });
@@ -374,7 +374,7 @@ await runTest('Alice creates a check for 20 XRP payable to Bob', async () => {
     const tx = new CheckCreateTx({
         Account: alice.classicAddress,
         Destination: bob.classicAddress,
-        SendMax: xrpToDrops('20'),
+        SendMax: xrpltoDrops('20'),
     });
     tx.validate();
     const res = await submitTx(client, tx, alice);
@@ -390,7 +390,7 @@ await runTest('Bob cashes the check for 15 XRP', async () => {
     const tx = new CheckCashTx({
         Account: bob.classicAddress,
         CheckID: checkId,
-        Amount: xrpToDrops('15'),
+        Amount: xrpltoDrops('15'),
     });
     tx.validate();
     const res = await submitTx(client, tx, bob);
@@ -401,7 +401,7 @@ await runTest('Alice creates and then cancels a check', async () => {
     const createTx = new CheckCreateTx({
         Account: alice.classicAddress,
         Destination: bob.classicAddress,
-        SendMax: xrpToDrops('5'),
+        SendMax: xrpltoDrops('5'),
     });
     createTx.validate();
     const createRes = await submitTx(client, createTx, alice);
@@ -450,7 +450,7 @@ await runTest('Alice creates a sell offer for her NFT', async () => {
     const tx = new NFTokenCreateOfferTx({
         Account: alice.classicAddress,
         NFTokenID: nftokenId,
-        Amount: xrpToDrops('1'),
+        Amount: xrpltoDrops('1'),
         Flags: 1, // tfSellNFToken
     });
     tx.validate();

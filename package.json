@@ -1,6 +1,6 @@
 {
-  "name": "xrpt",
-  "version": "0.3.3",
+  "name": "xrplt",
+  "version": "0.3.4",
   "description": "A standalone, zero-dependency transaction builder for the XRP Ledger",
   "type": "module",
   "main": "./dist/index.js",
@@ -50,10 +50,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jonathan-Dobson/xrpt.git"
+    "url": "git+https://github.com/Jonathan-Dobson/xrplt.git"
   },
   "bugs": {
-    "url": "https://github.com/Jonathan-Dobson/xrpt/issues"
+    "url": "https://github.com/Jonathan-Dobson/xrplt/issues"
   },
-  "homepage": "https://github.com/Jonathan-Dobson/xrpt#readme"
+  "homepage": "https://github.com/Jonathan-Dobson/xrplt#readme"
 }

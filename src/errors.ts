@@ -1,5 +1,5 @@
 /**
- * Custom error types for the xrpt package.
+ * Custom error types for the xrplt package.
  *
  * These are standalone — no dependency on xrpl's error hierarchy.
  */

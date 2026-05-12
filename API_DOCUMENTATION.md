@@ -1,6 +1,6 @@
-# xrpt API Documentation
+# xrplt API Documentation
 
-`xrpt` is a 100% type-safe, zero-dependency transaction builder for the XRP Ledger. It is designed to work seamlessly with `xrpl.js` while providing a robust class-based hierarchy for all 70+ XRPL transaction types.
+`xrplt` is a 100% type-safe, zero-dependency transaction builder for the XRP Ledger. It is designed to work seamlessly with `xrpl.js` while providing a robust class-based hierarchy for all 70+ XRPL transaction types.
 
 ## Table of Contents
 1. [Core Concepts](#core-concepts)

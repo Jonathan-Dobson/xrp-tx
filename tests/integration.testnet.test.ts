@@ -20,7 +20,7 @@ import {
   MPTokenAuthorizeTx,
 } from "../src/index.js";
 
-describe("xrpt Integration: Live Regression", () => {
+describe("xrplt Integration: Live Regression", () => {
   let client: Client;
   let alice: Wallet;
   let bob: Wallet;

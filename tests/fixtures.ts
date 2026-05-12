@@ -4,7 +4,7 @@ const testWallet = Wallet.generate();
 const destinationWallet = Wallet.generate();
 
 /**
- * Valid field sets for every transaction type supported by xrpt.
+ * Valid field sets for every transaction type supported by xrplt.
  * These are used to verify that the library can generate valid JSON
  * that xrpl.js can then encode and sign.
  */
